@@ -1,7 +1,7 @@
 # Template Esame C# - Negozio online
 
 Questo template contiene una Console App C# in un solo file: `Program.cs`.
-Non usa namespace e non divide il codice in moduli, così rispetta il vincolo della traccia.
+Non usa namespace e non divide il codice in moduli.
 Il file `TestNegozioOnline.cs` è separato dal programma principale e contiene test manuali senza framework esterni.
 
 ## Struttura
