@@ -26,140 +26,50 @@ contratti già presenti. Gli acquisti sono associati a un `Utente`, mentre il fi
 storico continua a usare il nome utente come richiesto dalla traccia.
 
 ```mermaid
-classDiagram
-    direction TB
+%%{init: {"flowchart": {"curve": "linear"}} }%%
+flowchart TB
+    Program["Program<br/>Main()"]
+    App["ApplicazioneNegozio<br/>menu utente e amministratore"]
+    Servizio["ServizioNegozio<br/>coordina le operazioni"]
 
-    namespace Avvio {
-        class Program {
-            +Main()
-        }
+    Catalogo["CatalogoProdotti"]
+    Carrello["CarrelloUtente"]
+    Storico["StoricoAcquisti"]
 
-        class ApplicazioneNegozio {
-            -CatalogoProdotti catalogoProdotti
-            -CarrelloUtente carrelloUtente
-            -StoricoAcquisti storicoAcquisti
-            -ServizioNegozio servizioNegozio
-            +Avvia()
-            -GestisciMenuUtente()
-            -GestisciMenuAmministratore()
-        }
-    }
+    Prodotto["Prodotto<br/>classe madre estendibile"]
+    RigaCarrello["ElementoCarrello"]
+    Utente["Utente<br/>classe madre estendibile"]
+    Acquisto["Acquisto"]
+    RigaAcquisto["ElementoAcquistato"]
+    Report["ReportProdotto"]
 
-    namespace Servizi {
-        class ServizioNegozio {
-            +AggiungiProdottoAlCarrello(string codiceProdotto, int quantita) bool
-            +ConfermaAcquisto(Utente utente) Acquisto
-            +CreaReportProdotti() List~ReportProdotto~
-            +StampaAcquisto(Acquisto acquisto)
-            +StampaReportProdotti()
-        }
-    }
+    ICatalogo["IGestioneCatalogo"]
+    ICarrello["IGestioneCarrello"]
+    IAcquisti["IGestioneAcquisti"]
 
-    namespace Gestori {
-        class CatalogoProdotti
-        class CarrelloUtente
-        class StoricoAcquisti
-    }
+    Program --> App
+    App --> Servizio
+    App --> Catalogo
+    App --> Carrello
+    App --> Storico
 
-    namespace Modelli {
-        class Utente {
-            +string Nome
-            +Utente(string nome)
-        }
+    Servizio --> Catalogo
+    Servizio --> Carrello
+    Servizio --> Storico
+    Servizio --> Acquisto
+    Servizio --> Report
 
-        class Prodotto {
-            +string CodiceProdotto
-            +string Nome
-            +decimal Prezzo
-            +int QuantitaDisponibile
-            +int QuantitaIniziale
-            +CambiaPrezzo(decimal nuovoPrezzo)
-            +CambiaQuantita(int variazioneQuantita)
-            +CalcolaQuantitaVenduta() int
-        }
+    Catalogo --> Prodotto
+    Carrello --> RigaCarrello
+    RigaCarrello --> Prodotto
 
-        class ElementoCarrello {
-            +Prodotto ProdottoSelezionato
-            +int QuantitaScelta
-            +decimal PrezzoUnitario
-            +CalcolaTotaleParziale() decimal
-            +CambiaQuantitaScelta(int nuovaQuantita)
-        }
-
-        class Acquisto {
-            +Utente Utente
-            +string NomeUtente
-            +List~ElementoAcquistato~ ProdottiAcquistati
-            +decimal TotaleOrdine
-            +DateTime DataAcquisto
-        }
-
-        class ElementoAcquistato {
-            +string CodiceProdotto
-            +string NomeProdotto
-            +int QuantitaAcquistata
-            +decimal PrezzoUnitario
-            +decimal TotaleParziale
-        }
-
-        class ReportProdotto {
-            +string CodiceProdotto
-            +string NomeProdotto
-            +int QuantitaIniziale
-            +int QuantitaVenduta
-            +int QuantitaDisponibile
-        }
-    }
-
-    namespace Contratti {
-        class IGestioneCatalogo {
-            <<interface>>
-            +AggiungiProdotto(Prodotto prodotto)
-            +EliminaProdotto(string codiceProdotto) bool
-            +CercaProdottoPerCodice(string codiceProdotto) Prodotto
-            +OttieniTuttiIProdotti() List~Prodotto~
-        }
-
-        class IGestioneCarrello {
-            <<interface>>
-            +AggiungiAlCarrello(Prodotto prodotto, int quantita) bool
-            +ModificaQuantitaNelCarrello(string codiceProdotto, int nuovaQuantita) bool
-            +RimuoviDalCarrello(string codiceProdotto) bool
-            +SvuotaCarrello()
-            +CalcolaTotale() decimal
-        }
-
-        class IGestioneAcquisti {
-            <<interface>>
-            +RegistraAcquisto(Acquisto acquisto)
-            +OttieniTuttiGliAcquisti() List~Acquisto~
-            +OttieniAcquistiPerUtente(string nomeUtente) List~Acquisto~
-        }
-    }
-
-    Program --> ApplicazioneNegozio
-    ApplicazioneNegozio --> ServizioNegozio
-    ApplicazioneNegozio --> CatalogoProdotti
-    ApplicazioneNegozio --> CarrelloUtente
-    ApplicazioneNegozio --> StoricoAcquisti
-
-    ServizioNegozio --> CatalogoProdotti
-    ServizioNegozio --> CarrelloUtente
-    ServizioNegozio --> StoricoAcquisti
-    ServizioNegozio ..> Acquisto
-    ServizioNegozio ..> ReportProdotto
-
-    CatalogoProdotti "1" o-- "*" Prodotto
-    CarrelloUtente "1" o-- "*" ElementoCarrello
-    ElementoCarrello --> Prodotto
-
-    StoricoAcquisti "1" o-- "*" Acquisto
+    Storico --> Acquisto
     Acquisto --> Utente
-    Acquisto "1" o-- "*" ElementoAcquistato
+    Acquisto --> RigaAcquisto
 
-    CatalogoProdotti ..|> IGestioneCatalogo
-    CarrelloUtente ..|> IGestioneCarrello
-    StoricoAcquisti ..|> IGestioneAcquisti
+    Catalogo -. implementa .-> ICatalogo
+    Carrello -. implementa .-> ICarrello
+    Storico -. implementa .-> IAcquisti
 ```
 
 ## Cosa è già implementato
