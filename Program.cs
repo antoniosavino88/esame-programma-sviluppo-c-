@@ -45,9 +45,9 @@ public class ApplicazioneNegozio
     public void Avvia()
     {
         // 1. Mostrare un messaggio di benvenuto
-        Console.WriteLine("==================================================");
-        Console.WriteLine("       BENVENUTO NEL NOSTRO NEGOZIO ONLINE        ");
-        Console.WriteLine("==================================================");
+        ScriviIntestazione("==================================================");
+        ScriviIntestazione("       BENVENUTO NEL NOSTRO NEGOZIO ONLINE        ");
+        ScriviIntestazione("==================================================");
 
         bool inEsecuzione = true;
 
@@ -69,7 +69,7 @@ public class ApplicazioneNegozio
 
                 case "esci":
                     inEsecuzione = false;
-                    Console.WriteLine("\nGrazie per aver usato il sistema. Arrivederci!");
+                    ScriviSuccesso("\nGrazie per aver usato il sistema. Arrivederci!");
                     break;
             }
         }
@@ -89,11 +89,11 @@ public class ApplicazioneNegozio
         while (true)
         {
             Console.WriteLine();
-            Console.WriteLine("=== ACCESSO ===");
-            Console.WriteLine("1. Entra come utente");
-            Console.WriteLine("2. Entra come amministratore");
-            Console.WriteLine("3. Esci");
-            Console.Write("Scelta: ");
+            ScriviIntestazione("=== ACCESSO ===");
+            ScriviVoceMenu("1. Entra come utente");
+            ScriviVoceMenu("2. Entra come amministratore");
+            ScriviVoceMenu("3. Esci");
+            ScriviPrompt("Scelta: ");
 
             string? input = Console.ReadLine()?.Trim();
 
@@ -103,7 +103,7 @@ public class ApplicazioneNegozio
                 case "2": return "amministratore";
                 case "3": return "esci";
                 default:
-                    Console.WriteLine("Scelta non valida. Digita 1, 2 o 3.");
+                    ScriviErrore("Scelta non valida. Digita 1, 2 o 3.");
                     break;
             }
         }
@@ -116,17 +116,17 @@ public class ApplicazioneNegozio
         while (continua)
         {
             Console.WriteLine();
-            Console.WriteLine("=== MENU UTENTE ===");
-            Console.WriteLine("1. Visualizza catalogo");
-            Console.WriteLine("2. Aggiungi prodotto al carrello");
-            Console.WriteLine("3. Visualizza carrello");
-            Console.WriteLine("4. Modifica quantità nel carrello");
-            Console.WriteLine("5. Rimuovi prodotto dal carrello");
-            Console.WriteLine("6. Svuota carrello");
-            Console.WriteLine("7. Conferma acquisto");
-            Console.WriteLine("8. Visualizza storico acquisti");
-            Console.WriteLine("9. Torna indietro");
-            Console.Write("Scelta: ");
+            ScriviIntestazione("=== MENU UTENTE ===");
+            ScriviVoceMenu("1. Visualizza catalogo");
+            ScriviVoceMenu("2. Aggiungi prodotto al carrello");
+            ScriviVoceMenu("3. Visualizza carrello");
+            ScriviVoceMenu("4. Modifica quantità nel carrello");
+            ScriviVoceMenu("5. Rimuovi prodotto dal carrello");
+            ScriviVoceMenu("6. Svuota carrello");
+            ScriviVoceMenu("7. Conferma acquisto");
+            ScriviVoceMenu("8. Visualizza storico acquisti");
+            ScriviVoceMenu("9. Torna indietro");
+            ScriviPrompt("Scelta: ");
 
             string? scelta = Console.ReadLine()?.Trim();
 
@@ -137,11 +137,11 @@ public class ApplicazioneNegozio
                     break;
 
                 case "2":
-                    Console.Write("Codice prodotto: ");
+                    ScriviPrompt("Codice prodotto: ");
                     string? codiceAggiunta = Console.ReadLine()?.Trim();
                     int quantitaAggiunta = LeggiInteroPositivo("Quantità: ");
                     bool aggiunto = servizioNegozio.AggiungiProdottoAlCarrello(codiceAggiunta ?? "", quantitaAggiunta);
-                    Console.WriteLine(aggiunto ? "Prodotto aggiunto al carrello." : "Impossibile aggiungere il prodotto.");
+                    ScriviEsito(aggiunto, "Prodotto aggiunto al carrello.", "Impossibile aggiungere il prodotto.");
                     break;
 
                 case "3":
@@ -149,38 +149,38 @@ public class ApplicazioneNegozio
                     break;
 
                 case "4":
-                    Console.Write("Codice prodotto da modificare: ");
+                    ScriviPrompt("Codice prodotto da modificare: ");
                     string? codiceModifica = Console.ReadLine()?.Trim();
                     int nuovaQuantita = LeggiInteroPositivo("Nuova quantità: ");
                     bool modificato = carrelloUtente.ModificaQuantitaNelCarrello(codiceModifica ?? "", nuovaQuantita);
-                    Console.WriteLine(modificato ? "Quantità aggiornata." : "Impossibile modificare la quantità.");
+                    ScriviEsito(modificato, "Quantità aggiornata.", "Impossibile modificare la quantità.");
                     break;
 
                 case "5":
-                    Console.Write("Codice prodotto da rimuovere: ");
+                    ScriviPrompt("Codice prodotto da rimuovere: ");
                     string? codiceRimozione = Console.ReadLine()?.Trim();
                     bool rimosso = carrelloUtente.RimuoviDalCarrello(codiceRimozione ?? "");
-                    Console.WriteLine(rimosso ? "Prodotto rimosso dal carrello." : "Prodotto non trovato nel carrello.");
+                    ScriviEsito(rimosso, "Prodotto rimosso dal carrello.", "Prodotto non trovato nel carrello.");
                     break;
 
                 case "6":
                     carrelloUtente.SvuotaCarrello();
-                    Console.WriteLine("Carrello svuotato.");
+                    ScriviSuccesso("Carrello svuotato.");
                     break;
 
                 case "7":
-                    Console.Write("Inserisci il tuo nome per confermare l'acquisto: ");
+                    ScriviPrompt("Inserisci il tuo nome per confermare l'acquisto: ");
                     string? nomeUtente = Console.ReadLine()?.Trim();
                     try
                     {
                         Utente utente = new Utente(nomeUtente ?? "");
                         Acquisto acquisto = servizioNegozio.ConfermaAcquisto(utente);
-                        Console.WriteLine("Acquisto confermato!");
+                        ScriviSuccesso("Acquisto confermato!");
                         servizioNegozio.StampaAcquisto(acquisto);
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine("Errore: " + ex.Message);
+                        ScriviErrore("Errore: " + ex.Message);
                     }
                     break;
 
@@ -193,7 +193,7 @@ public class ApplicazioneNegozio
                     break;
 
                 default:
-                    Console.WriteLine("Scelta non valida. Digita un numero da 1 a 9.");
+                    ScriviErrore("Scelta non valida. Digita un numero da 1 a 9.");
                     break;
             }
         }
@@ -206,16 +206,16 @@ public class ApplicazioneNegozio
         while (continua)
         {
             Console.WriteLine();
-            Console.WriteLine("=== MENU AMMINISTRATORE ===");
-            Console.WriteLine("1. Visualizza catalogo");
-            Console.WriteLine("2. Aggiungi prodotto");
-            Console.WriteLine("3. Elimina prodotto");
-            Console.WriteLine("4. Modifica prezzo prodotto");
-            Console.WriteLine("5. Modifica quantità disponibile");
-            Console.WriteLine("6. Visualizza tutti gli acquisti");
-            Console.WriteLine("7. Report quantità prodotti");
-            Console.WriteLine("8. Torna indietro");
-            Console.Write("Scelta: ");
+            ScriviIntestazione("=== MENU AMMINISTRATORE ===");
+            ScriviVoceMenu("1. Visualizza catalogo");
+            ScriviVoceMenu("2. Aggiungi prodotto");
+            ScriviVoceMenu("3. Elimina prodotto");
+            ScriviVoceMenu("4. Modifica prezzo prodotto");
+            ScriviVoceMenu("5. Modifica quantità disponibile");
+            ScriviVoceMenu("6. Visualizza tutti gli acquisti");
+            ScriviVoceMenu("7. Report quantità prodotti");
+            ScriviVoceMenu("8. Torna indietro");
+            ScriviPrompt("Scelta: ");
 
             string? scelta = Console.ReadLine()?.Trim();
 
@@ -226,65 +226,65 @@ public class ApplicazioneNegozio
                     break;
 
                 case "2":
-                    Console.Write("Codice prodotto: ");
+                    ScriviPrompt("Codice prodotto: ");
                     string? codice = Console.ReadLine()?.Trim() ?? "";
-                    Console.Write("Nome prodotto: ");
+                    ScriviPrompt("Nome prodotto: ");
                     string? nome = Console.ReadLine()?.Trim() ?? "";
                     decimal prezzo = LeggiPrezzoPositivo("Prezzo (euro): ");
                     int quantitaIniziale = LeggiInteroPositivo("Quantità disponibile: ");
                     try
                     {
                         catalogoProdotti.AggiungiProdotto(new Prodotto(codice, nome, prezzo, quantitaIniziale));
-                        Console.WriteLine("Prodotto aggiunto.");
+                        ScriviSuccesso("Prodotto aggiunto.");
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine("Errore: " + ex.Message);
+                        ScriviErrore("Errore: " + ex.Message);
                     }
                     break;
 
                 case "3":
-                    Console.Write("Codice prodotto da eliminare: ");
+                    ScriviPrompt("Codice prodotto da eliminare: ");
                     string? codiceElimina = Console.ReadLine()?.Trim() ?? "";
                     bool eliminato = catalogoProdotti.EliminaProdotto(codiceElimina);
-                    Console.WriteLine(eliminato ? "Prodotto eliminato." : "Prodotto non trovato.");
+                    ScriviEsito(eliminato, "Prodotto eliminato.", "Prodotto non trovato.");
                     break;
 
                 case "4":
-                    Console.Write("Codice prodotto: ");
+                    ScriviPrompt("Codice prodotto: ");
                     string? codicePrezzo = Console.ReadLine()?.Trim() ?? "";
                     decimal nuovoPrezzo = LeggiPrezzoPositivo("Nuovo prezzo (euro): ");
                     bool prezzoModificato = catalogoProdotti.ModificaPrezzoProdotto(codicePrezzo, nuovoPrezzo);
-                    Console.WriteLine(prezzoModificato ? "Prezzo aggiornato." : "Prodotto non trovato.");
+                    ScriviEsito(prezzoModificato, "Prezzo aggiornato.", "Prodotto non trovato.");
                     break;
 
                 case "5":
-                    Console.Write("Codice prodotto: ");
+                    ScriviPrompt("Codice prodotto: ");
                     string? codiceQuantita = Console.ReadLine()?.Trim() ?? "";
-                    Console.Write("Variazione (positiva per aumentare, negativa per diminuire): ");
+                    ScriviPrompt("Variazione (positiva per aumentare, negativa per diminuire): ");
                     string? inputVariazione = Console.ReadLine()?.Trim();
                     if (int.TryParse(inputVariazione, out int variazione))
                     {
                         try
                         {
                             bool quantitaModificata = catalogoProdotti.ModificaQuantitaProdotto(codiceQuantita, variazione);
-                            Console.WriteLine(quantitaModificata ? "Quantità aggiornata." : "Prodotto non trovato.");
+                            ScriviEsito(quantitaModificata, "Quantità aggiornata.", "Prodotto non trovato.");
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine("Errore: " + ex.Message);
+                            ScriviErrore("Errore: " + ex.Message);
                         }
                     }
                     else
                     {
-                        Console.WriteLine("Valore non valido.");
+                        ScriviErrore("Valore non valido.");
                     }
                     break;
 
                 case "6":
                     List<Acquisto> tuttiAcquisti = storicoAcquisti.OttieniTuttiGliAcquisti();
                     Console.WriteLine();
-                    Console.WriteLine("=== TUTTI GLI ACQUISTI ===");
+                    ScriviIntestazione("=== TUTTI GLI ACQUISTI ===");
                     if (tuttiAcquisti.Count == 0)
                     {
                         Console.WriteLine("Nessun acquisto registrato.");
@@ -307,7 +307,7 @@ public class ApplicazioneNegozio
                     break;
 
                 default:
-                    Console.WriteLine("Scelta non valida. Digita un numero da 1 a 8.");
+                    ScriviErrore("Scelta non valida. Digita un numero da 1 a 8.");
                     break;
             }
         }
@@ -319,7 +319,7 @@ public class ApplicazioneNegozio
         List<Prodotto> prodotti = catalogoProdotti.OttieniTuttiIProdotti();
 
         Console.WriteLine();
-        Console.WriteLine("=== CATALOGO PRODOTTI ===");
+        ScriviIntestazione("=== CATALOGO PRODOTTI ===");
 
         if (prodotti.Count == 0)
         {
@@ -343,7 +343,7 @@ public class ApplicazioneNegozio
         List<ElementoCarrello> elementi = carrelloUtente.OttieniElementi();
 
         Console.WriteLine();
-        Console.WriteLine("=== CARRELLO ===");
+        ScriviIntestazione("=== CARRELLO ===");
 
         if (elementi.Count == 0)
         {
@@ -367,19 +367,19 @@ public class ApplicazioneNegozio
     private void MostraStoricoUtente()
     {
         // Metodo già implementato: chiede un nome e mostra gli acquisti collegati.
-        Console.Write("Inserisci nome utente: ");
+        ScriviPrompt("Inserisci nome utente: ");
         string? nomeUtente = Console.ReadLine();
 
         if (string.IsNullOrWhiteSpace(nomeUtente))
         {
-            Console.WriteLine("Nome utente non valido.");
+            ScriviErrore("Nome utente non valido.");
             return;
         }
 
         List<Acquisto> acquistiUtente = storicoAcquisti.OttieniAcquistiPerUtente(nomeUtente);
 
         Console.WriteLine();
-        Console.WriteLine("=== STORICO ACQUISTI DI " + nomeUtente.Trim() + " ===");
+        ScriviIntestazione("=== STORICO ACQUISTI DI " + nomeUtente.Trim() + " ===");
 
         if (acquistiUtente.Count == 0)
         {
@@ -397,7 +397,7 @@ public class ApplicazioneNegozio
     {
         while (true)
         {
-            Console.Write(messaggio);
+            ScriviPrompt(messaggio);
             string? input = Console.ReadLine();
 
             if (int.TryParse(input, out int valore) && valore > 0)
@@ -405,7 +405,7 @@ public class ApplicazioneNegozio
                 return valore;
             }
 
-            Console.WriteLine("Valore non valido. Inserisci un numero intero maggiore di zero.");
+            ScriviErrore("Valore non valido. Inserisci un numero intero maggiore di zero.");
         }
     }
 
@@ -413,7 +413,7 @@ public class ApplicazioneNegozio
     {
         while (true)
         {
-            Console.Write(messaggio);
+            ScriviPrompt(messaggio);
             string? input = Console.ReadLine();
 
             if (decimal.TryParse(input, out decimal valore) && valore > 0)
@@ -421,8 +421,49 @@ public class ApplicazioneNegozio
                 return valore;
             }
 
-            Console.WriteLine("Valore non valido. Inserisci un prezzo maggiore di zero.");
+            ScriviErrore("Valore non valido. Inserisci un prezzo maggiore di zero.");
         }
+    }
+
+    private static void ScriviIntestazione(string testo)
+    {
+        Console.ForegroundColor = ConsoleColor.Cyan;
+        Console.WriteLine(testo);
+        Console.ResetColor();
+    }
+
+    private static void ScriviVoceMenu(string testo)
+    {
+        Console.ForegroundColor = ConsoleColor.White;
+        Console.WriteLine(testo);
+        Console.ResetColor();
+    }
+
+    private static void ScriviPrompt(string testo)
+    {
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.Write(testo);
+        Console.ResetColor();
+    }
+
+    private static void ScriviSuccesso(string testo)
+    {
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine(testo);
+        Console.ResetColor();
+    }
+
+    private static void ScriviErrore(string testo)
+    {
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.WriteLine(testo);
+        Console.ResetColor();
+    }
+
+    private static void ScriviEsito(bool successo, string messaggioOk, string messaggioKo)
+    {
+        if (successo) ScriviSuccesso(messaggioOk);
+        else ScriviErrore(messaggioKo);
     }
 }
 
