@@ -445,29 +445,67 @@ public class CarrelloUtente : IGestioneCarrello
 
     public bool AggiungiAlCarrello(Prodotto prodotto, int quantita)
     {
-        // TODO: completare l'aggiunta al carrello.
-        // Regole:
-        // - rifiutare quantità <= 0;
-        // - rifiutare quantità maggiore della disponibilità di magazzino;
-        // - se il prodotto è già presente, aumentare la quantità esistente;
-        // - controllare che quantità esistente + quantità richiesta non superi il magazzino.
-        throw new NotImplementedException("Completare il metodo AggiungiAlCarrello.");
+        if (quantita <= 0)
+        {
+            return false;
+        }
+
+        ElementoCarrello? elementoEsistente = elementiCarrello
+            .FirstOrDefault(e => e.ProdottoSelezionato.CodiceProdotto == prodotto.CodiceProdotto);
+
+        if (elementoEsistente != null)
+        {
+            int quantitaTotale = elementoEsistente.QuantitaScelta + quantita;
+
+            if (quantitaTotale > prodotto.QuantitaDisponibile)
+            {
+                return false;
+            }
+
+            elementoEsistente.CambiaQuantitaScelta(quantitaTotale);
+            return true;
+        }
+
+        if (quantita > prodotto.QuantitaDisponibile)
+        {
+            return false;
+        }
+
+        elementiCarrello.Add(new ElementoCarrello(prodotto, quantita));
+        return true;
     }
 
     public bool ModificaQuantitaNelCarrello(string codiceProdotto, int nuovaQuantita)
     {
-        // TODO: trovare l'elemento del carrello e modificarne la quantità.
-        // Regole:
-        // - nuovaQuantita deve essere > 0;
-        // - nuovaQuantita non deve superare la disponibilità del prodotto.
-        throw new NotImplementedException("Completare il metodo ModificaQuantitaNelCarrello.");
+        ElementoCarrello? elemento = elementiCarrello
+            .FirstOrDefault(e => e.ProdottoSelezionato.CodiceProdotto.Equals(codiceProdotto, StringComparison.OrdinalIgnoreCase));
+
+        if (elemento == null)
+        {
+            return false;
+        }
+
+        if (nuovaQuantita <= 0 || nuovaQuantita > elemento.ProdottoSelezionato.QuantitaDisponibile)
+        {
+            return false;
+        }
+
+        elemento.CambiaQuantitaScelta(nuovaQuantita);
+        return true;
     }
 
     public bool RimuoviDalCarrello(string codiceProdotto)
     {
-        // TODO: rimuovere dal carrello l'elemento con il codice indicato.
-        // Restituire true se rimosso, false se non trovato.
-        throw new NotImplementedException("Completare il metodo RimuoviDalCarrello.");
+        ElementoCarrello? elemento = elementiCarrello
+            .FirstOrDefault(e => e.ProdottoSelezionato.CodiceProdotto.Equals(codiceProdotto, StringComparison.OrdinalIgnoreCase));
+
+        if (elemento == null)
+        {
+            return false;
+        }
+
+        elementiCarrello.Remove(elemento);
+        return true;
     }
 
     public void SvuotaCarrello()
