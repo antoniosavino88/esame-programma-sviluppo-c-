@@ -571,23 +571,54 @@ public class ServizioNegozio
 
     public bool AggiungiProdottoAlCarrello(string codiceProdotto, int quantita)
     {
-        // TODO: cercare il prodotto nel catalogo e delegare a carrelloUtente.AggiungiAlCarrello.
-        // Restituire false se il prodotto non esiste o se la quantità non è valida.
-        throw new NotImplementedException("Completare il metodo AggiungiProdottoAlCarrello.");
+        Prodotto? prodotto = catalogoProdotti.CercaProdottoPerCodice(codiceProdotto);
+
+        if (prodotto == null)
+        {
+            return false;
+        }
+
+        return carrelloUtente.AggiungiAlCarrello(prodotto, quantita);
     }
 
     public Acquisto ConfermaAcquisto(Utente utente)
     {
-        // TODO: completare la conferma dell'acquisto.
-        // Regole richieste dalla traccia:
-        // - impedire l'acquisto se il carrello è vuoto;
-        // - ricontrollare che ogni quantità sia valida e disponibile in magazzino;
-        // - creare gli ElementoAcquistato partendo dagli elementi del carrello;
-        // - diminuire la quantità disponibile dei prodotti acquistati;
-        // - registrare l'acquisto nello storico;
-        // - svuotare il carrello dopo un acquisto completato;
-        // - creare e restituire un Acquisto associato all'Utente ricevuto.
-        throw new NotImplementedException("Completare il metodo ConfermaAcquisto.");
+        List<ElementoCarrello> elementi = carrelloUtente.OttieniElementi();
+
+        if (elementi.Count == 0)
+        {
+            throw new InvalidOperationException("Il carrello è vuoto: impossibile confermare l'acquisto.");
+        }
+
+        foreach (ElementoCarrello elemento in elementi)
+        {
+            if (elemento.QuantitaScelta > elemento.ProdottoSelezionato.QuantitaDisponibile)
+            {
+                throw new InvalidOperationException(
+                    "Quantità non più disponibile per il prodotto: " + elemento.ProdottoSelezionato.Nome);
+            }
+        }
+
+        List<ElementoAcquistato> prodottiAcquistati = elementi
+            .Select(e => new ElementoAcquistato(
+                e.ProdottoSelezionato.CodiceProdotto,
+                e.ProdottoSelezionato.Nome,
+                e.QuantitaScelta,
+                e.PrezzoUnitario))
+            .ToList();
+
+        foreach (ElementoCarrello elemento in elementi)
+        {
+            catalogoProdotti.ModificaQuantitaProdotto(
+                elemento.ProdottoSelezionato.CodiceProdotto,
+                -elemento.QuantitaScelta);
+        }
+
+        Acquisto acquisto = new Acquisto(utente, prodottiAcquistati);
+        storicoAcquisti.RegistraAcquisto(acquisto);
+        carrelloUtente.SvuotaCarrello();
+
+        return acquisto;
     }
 
     public List<ReportProdotto> CreaReportProdotti()
